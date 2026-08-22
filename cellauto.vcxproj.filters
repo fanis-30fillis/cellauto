@@ -44,7 +44,9 @@
     <ClCompile Include="src\time.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\conways.c" />
+    <ClCompile Include="src\conways.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\icon.ico">
