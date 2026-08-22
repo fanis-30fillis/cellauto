@@ -1,20 +1,20 @@
 #include "wireworld.h"
 #include <stdlib.h>
+#include <raylib.h>
 
-void changeStatusOfCellInPosition(struct WireworldCell* grid, int rows, int cols, int mouseRow, int mouseCol) {
-    struct WireworldCell cell = grid[mouseRow * cols + mouseCol];
-    switch (cell.state) {
+void changeStatusOfCellInPosition(struct WireworldCell* grid, int cols, int mouseRow, int mouseCol) {
+    switch (grid[mouseRow * cols + mouseCol].state) {
     case EMPTY:
-		cell.state = CONDUCTOR;
+		grid[mouseRow * cols + mouseCol].state = CONDUCTOR;
         break;
     case HEAD:
-		cell.state = TAIL;
+		grid[mouseRow * cols + mouseCol].state = TAIL;
         break;
     case TAIL:
-		cell.state = EMPTY;
+		grid[mouseRow * cols + mouseCol].state = EMPTY;
         break; 
     case CONDUCTOR:
-		cell.state = HEAD;
+		grid[mouseRow * cols + mouseCol].state = HEAD;
         break;
     }
 
@@ -24,6 +24,15 @@ void calculateNextStatus(struct WireworldCell* grid, int rows, int cols) {
 	for (int row = 0; row < rows; row++) {
 		for (int col = 0; col < cols; col++) {
 			grid[row * cols + col].nextState = calculateCellNextStatus(grid, rows, cols, row, col);
+		}
+	}
+}
+
+void wireworldSetNextState(struct WireworldCell* grid, int rows, int cols) {
+	for (int row = 0; row < rows; row++) {
+		for (int col = 0; col < cols; col++) {
+			grid[row * cols + col].state = grid[row * cols + col].nextState;
+			grid[row * cols + col].nextState = EMPTY;
 		}
 	}
 }
@@ -59,4 +68,39 @@ enum WireworldCellState calculateCellNextStatus(struct WireworldCell* grid, int 
 		return HEAD;
 	}
 	return CONDUCTOR;
+}
+
+void wireworldDraw(struct WireworldCell* grid, int rows, int cols, int cellSize) {
+	for (int row = 0; row < rows; row++) {
+		for (int col = 0; col < cols; col++) {
+			struct WireworldCell cell = grid[row * cols + col];
+			switch (cell.state) {
+			case EMPTY:
+				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, BLUE);
+				break;
+			case CONDUCTOR:
+				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, YELLOW);
+				break;
+			case HEAD:
+				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, GREEN);
+				break;
+			case TAIL:
+				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, RED);
+				break;
+			}
+		}
+	}
+}
+
+void wireworldResizeGrid(struct WireworldCell* grid, struct WireworldCell* newGrid, int rows, int cols, int cellSize, int newRows, int newCols) {
+	for (int oldRow = 0; oldRow < cols; oldRow++) {
+		for (int oldCol = 0; oldCol < cols; oldCol++) {
+			if (oldRow < newRows && oldCol < newCols) {
+				const int oldSpace = oldRow * cols + oldCol;
+				const int newSpace = oldRow * newCols + oldCol;
+				newGrid[newSpace] = grid[oldSpace];
+			}
+		}
+	}
+
 }
