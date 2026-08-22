@@ -2,11 +2,11 @@
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 #include "grid.h"	// utility header for drawGrid
 #include <stdlib.h>
-#include <conways.h>
+#include "conways.h"
 #include <errno.h>
 #include <stdio.h>
 #include "time.h"
-#include <wireworld.h>
+#include "wireworld.h"
 
 void changeCellInPosition(struct cell* grid, int rows, int cols, int physicalRow, int physicalCol, int cellSize, bool newState) {
 	int actualRow = physicalRow / cellSize;
@@ -126,7 +126,7 @@ void runWireworldGame() {
 	int screenWidth, screenHeight;
 	screenWidth = GetScreenWidth();
 	screenHeight = GetScreenHeight();
-	struct WireworldCell* grid = (struct WireworldCell*)calloc((screenHeight * screenWidth) / cellSize, sizeof * WireworldCell);
+	struct cell* grid = (struct cell*)calloc((screenHeight * screenWidth) / cellSize, sizeof * grid);
 	if (grid == NULL) {
 		printf("Failed to allocate memory for wireworld grid\n");
 		exit(ENOMEM);
