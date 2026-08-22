@@ -61,6 +61,7 @@ void runConwaysGame() {
 		manualChange = false;
 		// We only care whether the mouse is down, that means that the user can click and drag to enable/disable cells
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+			// we don't care abt the loss of precision
 			enableCellInPosition(grid, cols, mousePoint.y, mousePoint.x, cellSize);
 			manualChange = true;
 		} else if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
@@ -116,7 +117,99 @@ void runConwaysGame() {
 	CloseWindow();
 }
 
+
+void runWireworld() {
+	// Tell the window to use vsync and work on high DPI displays
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+
+	// Create the window and OpenGL context
+	InitWindow(800, 600, "Wireworld in RayLib");
+
+	int targetFps = 10;
+	const uint64_t delay = 1000000000 / targetFps;
+	int cellSize = 10;
+	// Load a texture from the resources directory
+	int screenWidth, screenHeight;
+	screenWidth = GetScreenWidth();
+	screenHeight = GetScreenHeight();
+	int rows = (screenHeight + cellSize - 1) / cellSize;
+	int cols = (screenWidth + cellSize - 1) / cellSize;
+	struct WireworldCell* grid = (struct WireworldCell*)calloc(rows * cols, sizeof * grid);
+	if (grid == NULL) {
+		printf("Failed to allocate memory for grid\n");
+		exit(ENOMEM);
+	}
+	SetTargetFPS(60);	// set our game to run at 60 frames per second
+	Vector2 mousePoint = { 0.0f, 0.0f };
+	bool manualChange = false;         // Button action should be activated
+	bool paused = false;
+	uint64_t lastTime = 0;
+	bool singleStep = false;
+	SetWindowState(FLAG_WINDOW_RESIZABLE);
+	while (!WindowShouldClose())
+	{
+		// drawing
+		BeginDrawing();
+		ClearBackground(BLUE);
+		mousePoint = GetMousePosition();
+		manualChange = false;
+		// We only care whether the mouse is down, that means that the user can click and drag to enable/disable cells
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+			// we don't care abt the loss of precision
+			changeStatusOfCellInPosition(grid, cols, mousePoint.y/cellSize, mousePoint.x/cellSize);
+			manualChange = true;
+		}
+
+		if (IsKeyPressed(KEY_SPACE)) {
+			paused = !paused;
+		}
+
+		if (IsKeyReleased(KEY_RIGHT) && paused) {
+			singleStep = true;
+		}
+		// detect resizes and change accordintly
+		if (IsWindowResized()) { // ||&& !IsWindowFullscreen()
+			int oldRows = rows;
+			int oldCols = cols;
+			const long oldSize = oldRows * oldCols;
+			screenWidth = GetScreenWidth();
+			screenHeight = GetScreenHeight();
+			rows = (screenHeight + cellSize - 1) / cellSize;
+			cols = (screenWidth + cellSize - 1) / cellSize;
+			const long newSize = rows * cols;
+			struct WireworldCell* newGrid = (struct WireworldCell*) calloc(newSize, sizeof * newGrid);
+
+			if (newGrid == NULL) {
+				printf("Failed to reallocate memory for grid\n");
+				free(grid);
+				exit(ENOMEM);
+			}
+
+			wireworldResizeGrid(grid, newGrid, oldRows, oldCols, cellSize, rows, cols);
+			free(grid);
+			grid = newGrid;
+		}
+		drawGrid(screenWidth, screenHeight, cellSize);
+		wireworldDraw(grid, rows, cols, cellSize);
+		uint64_t currentTime = monotonic_ns();
+		// we won't draw if the game is paused, if the user is currently changing stuff and if the delay has not passed yet
+		if ((!paused && !manualChange && currentTime - lastTime >= delay) || singleStep) {
+			calculateNextStatus(grid, rows, cols);
+			wireworldSetNextState(grid, rows, cols);
+			lastTime = currentTime;
+			singleStep = false;
+		}
+
+		// end the frame and get ready for the next one  (display frame, poll input, etc...)
+		EndDrawing();
+	}
+
+	free(grid);
+	CloseWindow();
+}
+
 int main () {
-	runConwaysGame();
+	//runConwaysGame();
+	runWireworld();
 	return 0;
 }
