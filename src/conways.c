@@ -107,9 +107,9 @@ bool set_next_state(struct cell* res, size_t rows, size_t cols) {
  */
 void drawCurrentState(struct cell* res, size_t rows, size_t cols, int cellSize) {
     int physicalRow = 0;
-    for (int row = 0; row < rows; row++) {
+    for (size_t row = 0; row < rows; row++) {
         int physicalCol = 0;
-        for (int col = 0; col < cols; col++) {
+        for (size_t col = 0; col < cols; col++) {
             // the cell size must be twice the offset so it's dead center
             if (res[row * cols + col].alive) {
                 DrawRectangle(physicalCol + 1, physicalRow + 1, cellSize - 2, cellSize - 2, GREEN);
