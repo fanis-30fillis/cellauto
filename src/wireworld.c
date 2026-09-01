@@ -71,24 +71,28 @@ enum WireworldCellState calculateCellNextStatus(struct WireworldCell* grid, int 
 }
 
 void wireworldDraw(struct WireworldCell* grid, int rows, int cols, int cellSize) {
+	int physicalRow = 0;
 	for (int row = 0; row < rows; row++) {
+		int physicalCol = 0;
 		for (int col = 0; col < cols; col++) {
 			struct WireworldCell cell = grid[row * cols + col];
 			switch (cell.state) {
 			case EMPTY:
-				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, BLUE);
+				DrawRectangle(physicalCol+1, physicalRow + 1, cellSize - 2, cellSize - 2, BLUE);
 				break;
 			case CONDUCTOR:
-				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, YELLOW);
+				DrawRectangle(physicalCol+1, physicalRow + 1, cellSize - 2, cellSize - 2, YELLOW);
 				break;
 			case HEAD:
-				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, GREEN);
+				DrawRectangle(physicalCol+1, physicalRow + 1, cellSize - 2, cellSize - 2, GREEN);
 				break;
 			case TAIL:
-				DrawRectangle(col * cellSize, row * cellSize + 1, cellSize - 2, cellSize - 2, RED);
+				DrawRectangle(physicalCol+1, physicalRow + 1, cellSize - 2, cellSize - 2, RED);
 				break;
 			}
+			physicalCol += cellSize;
 		}
+		physicalRow += cellSize;
 	}
 }
 
