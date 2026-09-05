@@ -209,7 +209,15 @@ void runWireworld() {
 }
 
 int main () {
-	//runConwaysGame();
-	runWireworld();
+	printf("Conways or Wireworld? (c/w): ");
+	char choice;
+	scanf(" %c", &choice);
+	if (choice == 'c' || choice == 'C') {
+		runConwaysGame();
+	} else if (choice == 'w' || choice == 'W') {
+		runWireworld();
+	} else {
+		printf("Invalid choice. Exiting.\n");
+	}
 	return 0;
 }
