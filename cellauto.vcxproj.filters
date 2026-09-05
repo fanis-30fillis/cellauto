@@ -58,9 +58,4 @@
       <Filter>Windows Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\wabbit_alpha.png">
-      <Filter>Game Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

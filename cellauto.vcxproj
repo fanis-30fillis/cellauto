@@ -321,9 +321,6 @@
     <ResourceCompile Include="src\application.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\wabbit_alpha.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="raylib.vcxproj">
       <Project>{8898EA18-743A-15EF-5DF5-284349369C3F}</Project>
     </ProjectReference>
